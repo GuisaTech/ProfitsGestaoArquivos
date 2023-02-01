@@ -1,0 +1,87 @@
+﻿@model IEnumerable<ProfitsChallange.Models.Document>
+
+@{ 
+    Layout = null;
+}
+<div>
+    <input type="hidden" value="@Model.Count()" id="documentQuantity" />
+
+    @foreach (var doc in Model)
+    {
+        <div class="list-group mt-2">
+            <div class="list-group-item list-group-item-action" aria-current="true">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">@doc.Code - @doc.Title</h5>
+                </div>
+
+                @if (doc.Removed)
+                {
+                    <div class="row mt-3">
+                        <div class="col-sm-6 text-start">
+                            <a class="btn btn-outline-info" title="Restaurar Arquivo" style="font-size: 15px;" onclick="UnarchiveDocument(@doc.ID)">
+                                <i class="fa fa-reply-all" aria-hidden="true"></i>
+                            </a>
+
+                            <a class="btn btn-outline-danger" title="Excluír Permanentemente" style="font-size: 10px;" onclick="DeleteDocument(@doc.ID)">
+                                <i class="fa fa-trash" aria-hidden="true"></i>
+                            </a>
+                        </div>
+
+                        <div class="col-sm-6">
+                            <div class="text-end">
+                                @{
+                                    var resultDays = (int)(DateTime.Now - doc.RegisterDate).TotalDays;
+                                    var resultHours = (int)(DateTime.Now - doc.RegisterDate).TotalHours;
+                                    var timePassed = resultDays <= 0 ? resultHours + " Hora(s) atrás" : resultDays + " dia(s) atás";
+                                }
+                                <small title="Adicinado á...">@timePassed <i class="fa fa-clock-o" aria-hidden="true"></i></small>
+                            </div>
+                        </div>
+
+                    </div>
+                }
+                else
+                {
+            <div class="row mt-3">
+                <div class="col-sm-6 text-start">
+                    <a class="btn btn-outline-success" style="font-size: 10px;" title="Editar Documento" id="@doc.ID-btnEditar" @*onmouseover="AnimationGrow('@doc.ID-btnEditar')"*@ data-bs-toggle="modal" onclick="ShowCreateEditModel('@doc.ID', '@doc.Code', '@doc.Title', '@doc.ReviewInt', '@doc.PlannedDate.ToString("yyyy/MM/dd")', '@doc.Value')" data-bs-target="#CreateAndEditModel">
+                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    </a>
+
+                    <a class="btn btn-outline-info" style="font-size: 10px;" title="Detalhes" onclick="ShowDocumentInformations(@doc.ID)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+                        <i class="fa fa-info" aria-hidden="true"></i>
+                    </a>
+
+                    <a class="btn btn-outline-danger" style="font-size: 10px;" title="Arquivar Documento" onclick="ArchiveDocumentOrDelete(@doc.ID)">
+                        <i class="fa fa-archive" aria-hidden="true"></i>
+                    </a>
+                </div>
+
+                <div class="col-sm-6">
+                    <div class="text-end">
+                        @{
+                            var resultDays = (int)(DateTime.Now - doc.RegisterDate).TotalDays;
+                            var resultHours = (int)(DateTime.Now - doc.RegisterDate).TotalHours;
+                            var timePassed = resultDays <= 0 ? resultHours + " Hora(s) atrás" : resultDays + " dia(s) atás";
+                        }
+                        <small title="Adicionado a... ">@timePassed <i class="fa fa-clock-o" aria-hidden="true"></i></small>
+                    </div>
+                </div>
+
+            </div>
+                }
+
+
+
+            </div>
+
+        </div>
+    }
+</div>
+
+
+<script>
+    var newValue = document.getElementById("documentQuantity").value;
+    document.getElementById("DocumentCount").innerHTML = 'Total: <b>' + newValue + '</b> arquivo(s)';
+    $("#CreateAndEditModel").modal('hide');
+</script>

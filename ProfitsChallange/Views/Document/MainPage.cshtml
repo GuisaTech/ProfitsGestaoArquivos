@@ -1,0 +1,149 @@
+﻿@model IEnumerable<ProfitsChallange.Models.Document>
+
+@{
+    ViewData["Title"] = "Página Incicial";
+}
+
+<div class="container-fluid my-3">
+    <div class="row justify-content-center">
+        <div class="col-sm-12 col-lg-12">
+            <div class="text-center">
+                <span class="display-3 text-center">Seus Documentos</span>
+
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <a class="btn btn-success mt-1 " style="font-size: 13px;" data-bs-toggle="modal" onclick="ShowCreateEditModel('0')" data-bs-target="#CreateAndEditModel">
+                        Adicionar Novo Documento
+                    </a>
+                    <a class="btn btn-danger mt-1" style="font-size: 13px;" id="btnShowArchivedDocument" onclick="ShowArchivedDocument(true)">
+                        Ver Documentos Arquivados
+                    </a>
+                </div>
+
+            </div>
+            <hr />
+            <div class="row">
+                <div class="col-sm-12 text-end">
+                    <small id="DocumentCount">Total: <b>@Model.Count()</b> arquivo(s)</small>
+                </div>
+
+            </div>
+            
+        </div>
+        <div class="col-sm-12 col-lg-12 text-center" id="DocumentListArea">
+            @foreach (var doc in Model)
+            {
+                <div class="list-group mt-2">
+                    <div class="list-group-item list-group-item-action" aria-current="true">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">@doc.Code - @doc.Title</h5>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-sm-6 text-start">
+                                <a class="btn btn-outline-success" style="font-size: 10px;" title="Editar Documento" id="@doc.ID-btnEditar" @*onmouseover="AnimationGrow('@doc.ID-btnEditar')"*@ data-bs-toggle="modal" onclick="ShowCreateEditModel('@doc.ID', '@doc.Code', '@doc.Title', '@doc.ReviewInt', '@doc.PlannedDate.ToString("yyyy/MM/dd")', '@doc.Value')" data-bs-target="#CreateAndEditModel">
+                                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                </a>
+
+                                <a class="btn btn-outline-info" style="font-size: 10px;" title="Detalhes" onclick="ShowDocumentInformations(@doc.ID)" data-bs-toggle="offcanvas" data-bs-target="#offcanvasBottom" aria-controls="offcanvasBottom">
+                                    <i class="fa fa-info" aria-hidden="true"></i>
+                                </a>
+
+                                <a class="btn btn-outline-danger" style="font-size: 10px;" title="Arquivar Documento" onclick="ArchiveDocumentOrDelete(@doc.ID)">
+                                    <i class="fa fa-archive" aria-hidden="true"></i>
+                                </a>
+                            </div>
+
+                            <div class="col-sm-6">
+                                <div class="text-end">
+                                    @{
+                                        var resultDays = (int)(DateTime.Now - doc.RegisterDate).TotalDays;
+                                        var resultHours = (int)(DateTime.Now - doc.RegisterDate).TotalHours;
+                                        var timePassed = resultDays <= 0 ? resultHours + " Hora(s) atrás" : resultDays + " dia(s) atás";
+                                    }
+                                    <small title="Adicionado a...">@timePassed <i class="fa fa-clock-o" aria-hidden="true"></i></small>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="CreateAndEditModel" tabindex="-1" aria-labelledby="CreateAndEditModelLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="CreateAndEditModelLabel">Adicionar Novo Documento</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form class="" action="/Document/SaveNewOrUpdateDocument" method="post" onsubmit="return CreateOrAddNewDocument(event)">
+
+                <div class="modal-body"  id="BuildCreateEditForm">
+                    <div class="row ">
+                        <div class="col-sm-12 ">
+                            <div class="form-grup mt-2">
+                                <input name="ID" id="ID" type="hidden" value="0" />
+                                <input name="Code" id="Code" required min="10" maxlength="10" placeholder="Código do Documento" class="form-control" />
+                            </div>
+                            <div class="form-grup mt-2">
+                                <input name="title" id="Title" required maxlength="100" placeholder="Titulo do Documento" class="form-control" />
+                            </div>
+                            <div class="form-grup mt-2">
+                                <select name="Review" id="Review" required class="form-control">
+                                    <option value="0">O</option>
+                                    <option value="1">A</option>
+                                    <option value="2">B</option>
+                                    <option value="3">C</option>
+                                    <option value="4">D</option>
+                                    <option value="5">E</option>
+                                    <option value="6">F</option>
+                                    <option value="7">G</option>
+                                </select>
+                            </div>
+                            <div class="form-grup mt-2">
+                                <input type="date" name="PlannedDate" id="PlannedDate" required class="form-control" />
+                            </div>
+
+                            <div class="form-grup mt-2">
+                                <input type="number" name="Value" id="Value" min="1.00" required placeholder="Valor do Documento" class="form-control" />
+                            </div>
+  
+                        </div>
+                        <div class="col-sm-12">
+                            <div class="d-grid gap-4 mt-2">
+                                <button type="submit" class="btn btn-success">Salvar</button>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div class="offcanvas offcanvas-bottom" tabindex="-1" id="offcanvasBottom" aria-labelledby="offcanvasBottomLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="detailsTitle"></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body small">
+        <div class="row">
+            <div class="col-sm-12">
+                <p class="lead m-md-1"><b>Código: </b> <span id="detailsCode"></span></p>
+                <p class="lead m-md-1"><b>Volor do Documento:</b> <span id="detailsValue"></span></p>
+                <p class="lead m-md-1"><b>Revisão: </b> <span id="detailsReview"></span></p>
+                <p class="lead m-md-1"><b>Data Planejada: </b> <span id="detailsPlannedDate"></span></p>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,30 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title - Meu Aplicativo ASP.NET</title>
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundles/modernizr")
+</head>
+<body>
+    <div class="nav navbar-expand-lg bg-dark text-light m-0 p-0">
+        <a class="navbar-brand text-muted fw-bold"><img src="~/Images/logo.png" alt="logo" title="ProfitsDOC" style="max-width: 25%" />ProfitsDOC</a>
+    </div>
+    <div class="container body-content">
+        @RenderBody()
+        <footer class=" text-center" style="margin-top: 120px;">
+            <p>&copy; @DateTime.Now.Year - ProfitsDOC Challange</p>
+        </footer>
+    </div>
+
+    <script src="https://kit.fontawesome.com/d83b21e690.js" crossorigin="anonymous"></script>
+    <script src="~/Scripts/jquery-3.6.0.min.js"></script>
+    <script src="~/Scripts/AjaxMethods/actions.js"></script>
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("scripts", required: false)
+
+</body>
+</html>
